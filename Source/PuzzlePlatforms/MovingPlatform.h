@@ -20,9 +20,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float deltaTime) override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Moving Platform")
 	float speed;
+
+	UPROPERTY(EditAnywhere, Category = "Moving Platform", Meta = (MakeEditWidget = true))	// 'BlueprintReadWrite' for some reason cancels out the 'MakeEditWidget' metadata specifier
+	FVector targetLocation;
+
+private:
+	FVector globalTargetLocation;
+	FVector globalStartLocation;
 };

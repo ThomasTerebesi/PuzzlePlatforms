@@ -21,16 +21,30 @@ void AMovingPlatform::BeginPlay()
 		SetReplicates(true);
 		SetReplicateMovement(true);
 	}
+
+	globalStartLocation = GetActorLocation();
+	globalTargetLocation = GetTransform().TransformPosition(targetLocation);
 }
 
-void AMovingPlatform::Tick(float DeltaTime)
+void AMovingPlatform::Tick(float deltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(deltaTime);
 
 	if (HasAuthority())	// '!HasAuthority()' refers to the client only
 	{
 		FVector location = GetActorLocation();
-		location += FVector(speed * DeltaTime, 0, 0);
+		FVector direction = (globalTargetLocation - globalStartLocation).GetSafeNormal();
+
+		if (FVector::PointsAreNear(location, globalTargetLocation, 20.0))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SWAPPING!"));
+
+			FVector temp = globalTargetLocation;
+			globalTargetLocation = globalStartLocation;
+			globalStartLocation = temp;
+		}
+
+		location += direction * speed * deltaTime;
 		SetActorLocation(location);
 	}
 }
